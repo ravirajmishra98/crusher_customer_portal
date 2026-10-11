@@ -28,17 +28,16 @@ export function SectionToolbar({
           <> records</>
         )}
       </p>
-      <div className="relative w-full sm:max-w-xs">
-        <Search
-          className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
-          aria-hidden
-        />
+      <div className="input-icon-wrap w-full sm:max-w-xs">
+        <span className="input-field-icon" aria-hidden>
+          <Search className="size-3.5" />
+        </span>
         <input
           type="search"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={placeholder}
-          className="input-field h-9 pl-9 text-sm"
+          className="input-field h-9 text-sm"
         />
       </div>
     </div>

@@ -4,7 +4,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { portalLogin } from '@/api/portal'
 import { portalLoginErrorMessage } from '@/lib/portalLoginError'
-import { getBrandName, isPortalLoginBypassEnabled } from '@/config/env'
+import { getPortalOperatorName, getPortalTitle, isPortalLoginBypassEnabled } from '@/config/env'
 import { usePortalAuth } from '@/context/PortalAuthContext'
 
 export function LoginPage() {
@@ -48,7 +48,11 @@ export function LoginPage() {
           <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/30">
             <Sparkles className="size-7" aria-hidden />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">{getBrandName()}</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            {getPortalOperatorName()}{' '}
+            <span className="font-semibold text-muted-foreground">Customer Portal</span>
+          </h1>
+          <p className="sr-only">{getPortalTitle()}</p>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             Sign in with the customer code and password from your supplier.
           </p>
@@ -59,41 +63,40 @@ export function LoginPage() {
           className="surface-card animate-scale-in space-y-4 p-6 backdrop-blur-sm"
           style={{ animationDelay: '0.08s' }}
         >
-          <div className="space-y-2">
-            <label htmlFor="code" className="text-sm font-medium">
+          <div className="space-y-1.5">
+            <label htmlFor="code" className="text-sm font-medium text-foreground">
               Customer code
             </label>
-            <div className="relative">
-              <KeyRound
-                className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden
-              />
+            <div className="input-icon-wrap">
+              <span className="input-field-icon" aria-hidden>
+                <KeyRound className="size-[1.125rem] stroke-[2]" />
+              </span>
               <input
                 id="code"
                 name="code"
                 autoComplete="username"
-                className="input-field pl-10"
+                className="input-field"
                 placeholder="e.g. CUST001"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
+          <div className="space-y-1.5">
+            <label htmlFor="password" className="text-sm font-medium text-foreground">
               Password
             </label>
-            <div className="relative">
-              <Lock
-                className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
-                aria-hidden
-              />
+            <div className="input-icon-wrap">
+              <span className="input-field-icon" aria-hidden>
+                <Lock className="size-[1.125rem] stroke-[2]" />
+              </span>
               <input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                className="input-field pl-10"
+                className="input-field"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

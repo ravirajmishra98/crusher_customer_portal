@@ -1,7 +1,7 @@
 import { LogOut, Mountain } from 'lucide-react'
 import { Link, Outlet } from 'react-router-dom'
 import { usePortalAuth } from '@/context/PortalAuthContext'
-import { getBrandName } from '@/config/env'
+import { getPortalTitle } from '@/config/env'
 
 export function PortalLayout() {
   const { profile, signOut } = usePortalAuth()
@@ -22,7 +22,7 @@ export function PortalLayout() {
                 to="/"
                 className="text-sm font-semibold tracking-tight text-foreground transition-colors hover:text-primary"
               >
-                {getBrandName()}
+                {getPortalTitle()}
               </Link>
               {profile ? (
                 <p className="truncate text-xs text-muted-foreground">{profile.customerName}</p>

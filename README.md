@@ -47,7 +47,7 @@ This repo is meant for its **own** origin (e.g. `portal.yourdomain.com`).
 |----------|---------|
 | `VITE_API_BASE_URL` | Full API base in production (required unless you reverse-proxy `/api/v1` on the same host) |
 | `VITE_API_PROXY_TARGET` | Dev-only proxy target (default live server in vite.config) |
-| `VITE_PORTAL_BRAND_NAME` | Login header title |
+| `VITE_PORTAL_OPERATOR_NAME` | Operator prefix (default `SuperCrusher`); title is `{name} Customer Portal` |
 
 ## Repo layout
 
