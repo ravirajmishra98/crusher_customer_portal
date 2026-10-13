@@ -1,14 +1,18 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Truck } from 'lucide-react'
 import type { PortalWeighmentSummary } from '@/types/portal'
 import { formatDateTime, formatInrAmount } from '@/lib/format'
 import { tripStatusBadgeClass, tripStatusLabel } from '@/lib/tripStatus'
 import { usePagination } from '@/hooks/usePagination'
+import { ExportCsvButton } from '@/components/ExportCsvButton'
+import { exportCsvFile } from '@/lib/exportCsv'
 import { PaginationBar } from './PaginationBar'
 import { SectionToolbar } from './SectionToolbar'
 
 type TripsTableProps = {
   trips: PortalWeighmentSummary[]
+  detailBasePath?: string
 }
 
 function matchesTrip(trip: PortalWeighmentSummary, query: string): boolean {
@@ -27,7 +31,7 @@ function matchesTrip(trip: PortalWeighmentSummary, query: string): boolean {
   return haystack.includes(q)
 }
 
-export function TripsTable({ trips }: TripsTableProps) {
+export function TripsTable({ trips, detailBasePath }: TripsTableProps) {
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
@@ -65,6 +69,36 @@ export function TripsTable({ trips }: TripsTableProps) {
         placeholder="Search challan, vehicle, material…"
         totalCount={trips.length}
         filteredCount={filtered.length}
+        actions={
+          <ExportCsvButton
+            disabled={filtered.length === 0}
+            onExport={() =>
+              exportCsvFile(
+                'dispatches',
+                [
+                  'Challan',
+                  'Vehicle',
+                  'Material',
+                  'Plant',
+                  'Net (MT)',
+                  'Amount',
+                  'Status',
+                  'Tare time',
+                ],
+                filtered.map((trip) => [
+                  trip.challanNo ?? trip.id,
+                  trip.vehicleNo,
+                  trip.materialName,
+                  trip.companyName,
+                  trip.netWt,
+                  trip.totalAmt ?? trip.amount,
+                  tripStatusLabel(trip.status),
+                  trip.tareTime,
+                ]),
+              )
+            }
+          />
+        }
       />
 
       <div className="overflow-x-auto">
@@ -93,7 +127,16 @@ export function TripsTable({ trips }: TripsTableProps) {
                 <tr key={trip.id}>
                   <td>
                     <div className="font-medium text-foreground">
-                      {trip.challanNo ?? `#${trip.id}`}
+                      {detailBasePath ? (
+                        <Link
+                          to={`${detailBasePath}/${trip.id}`}
+                          className="text-primary hover:underline"
+                        >
+                          {trip.challanNo ?? `#${trip.id}`}
+                        </Link>
+                      ) : (
+                        (trip.challanNo ?? `#${trip.id}`)
+                      )}
                     </div>
                     <div className="mt-0.5 text-xs text-muted-foreground md:hidden">
                       {trip.companyName}

@@ -7,8 +7,18 @@ Uses **portal JWT** from `POST /portal/login` — not the ERP staff token.
 
 | Method | Path | Auth |
 |--------|------|------|
-| POST | `/portal/login` | None — `{ code, password }` |
-| GET | `/portal/dashboard` | `Authorization: Bearer <portal token>` |
+| POST | `/portal/login` | None — `{ email, password }` (or `code`) |
+| POST | `/portal/refresh` | `{ refreshToken }` |
+| POST | `/portal/change-password` | Bearer — `{ currentPassword, newPassword }` |
+| GET | `/portal/me` | Profile |
+| GET | `/portal/dashboard` | Landing summary |
+| GET | `/portal/credit-status` | Credit block status |
+| GET | `/portal/outstanding` | Balance + FIFO aging |
+| GET | `/portal/ledger` | Ledger (`dateFrom`, `dateTo`) |
+| GET | `/portal/dispatches` | Trip list |
+| GET | `/portal/dispatches/{id}` | Trip detail |
+| GET | `/portal/invoices` | Invoice list |
+| GET | `/portal/invoices/{id}` | Invoice detail |
 
 Staff enable access in the main ERP app: **Masters → Customer → Portal** (`PATCH /customers/{id}/portal-access`).
 

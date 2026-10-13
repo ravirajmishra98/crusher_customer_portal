@@ -2,6 +2,7 @@
 
 @theme inline {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Plus Jakarta Sans', var(--font-sans);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -18,22 +19,25 @@
 }
 
 :root {
-  --background: #f4f6fb;
-  --foreground: #0c1222;
+  --background: #f1f5f9;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --muted: #eef1f8;
-  --muted-foreground: #5c6478;
-  --primary: #4f46e5;
+  --muted: #e8edf4;
+  --muted-foreground: #64748b;
+  --primary: #4338ca;
   --primary-foreground: #ffffff;
-  --accent: #818cf8;
+  --accent: #6366f1;
   --accent-foreground: #1e1b4b;
-  --border: #e2e8f4;
+  --border: #e2e8f0;
   --destructive: #e11d48;
   --success: #059669;
   --warning: #d97706;
-  --gradient-start: #6366f1;
-  --gradient-mid: #8b5cf6;
-  --gradient-end: #3b82f6;
+  --gradient-start: #4f46e5;
+  --gradient-mid: #7c3aed;
+  --gradient-end: #2563eb;
+  /* Sidebar: muted tones aligned with balance-hero palette */
+  --customer-sidebar-from: color-mix(in srgb, var(--gradient-start) 38%, #1e293b);
+  --customer-sidebar-mid: color-mix(in srgb, var(--gradient-end) 32%, #0f172a);
 }
 
 @keyframes fade-in-up {
@@ -103,6 +107,36 @@ body {
   @apply min-h-dvh bg-background font-sans text-foreground antialiased;
 }
 
+.font-display {
+  font-family: var(--font-display);
+}
+
+.portal-shell {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 55%),
+    linear-gradient(180deg, #eef2ff 0%, var(--background) 14rem, var(--background) 100%);
+}
+
+.portal-shell::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.35;
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--foreground) 6%, transparent) 1px, transparent 0);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.brand-mark {
+  background: linear-gradient(145deg, var(--gradient-start) 0%, var(--gradient-mid) 55%, var(--gradient-end) 100%);
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--primary) 35%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 25%, transparent);
+}
+
 .page-stack {
   @apply mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))];
 }
@@ -112,7 +146,149 @@ body {
 }
 
 .data-panel {
-  @apply rounded-xl border border-border/80 bg-card shadow-sm shadow-slate-200/50;
+  @apply overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm shadow-slate-900/[0.04] ring-1 ring-slate-900/[0.02];
+}
+
+.stat-card {
+  @apply rounded-2xl border border-border/80 bg-card p-4 shadow-sm shadow-slate-900/[0.04] ring-1 ring-slate-900/[0.02] transition-[box-shadow,transform] duration-300 hover:shadow-md hover:shadow-slate-900/[0.06];
+}
+
+.quick-link-card {
+  @apply flex items-center gap-3 rounded-2xl border border-border/80 bg-card/90 p-3.5 shadow-sm shadow-slate-900/[0.03] ring-1 ring-slate-900/[0.02] transition-[border-color,box-shadow,transform] duration-200 hover:border-primary/25 hover:shadow-md hover:shadow-indigo-500/10 active:scale-[0.99];
+}
+
+.nav-pill {
+  @apply relative rounded-xl transition-[color,background-color,box-shadow] duration-200;
+}
+
+.nav-pill-idle {
+  @apply text-muted-foreground hover:bg-muted/80 hover:text-foreground;
+}
+
+.nav-pill-active {
+  @apply bg-primary text-primary-foreground shadow-md shadow-indigo-600/25;
+}
+
+.portal-sidebar {
+  color: #f1f5f9;
+  background: linear-gradient(
+    180deg,
+    var(--customer-sidebar-from) 0%,
+    var(--customer-sidebar-mid) 100%
+  );
+  border-right: 1px solid color-mix(in srgb, white 8%, transparent);
+}
+
+.portal-sidebar .brand-mark-customer {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start) 0%,
+    var(--gradient-end) 100%
+  );
+}
+
+.portal-sidebar .sidebar-section {
+  border-color: color-mix(in srgb, white 8%, transparent);
+  background: transparent;
+}
+
+.portal-sidebar .sidebar-brand-title {
+  @apply text-slate-50 hover:text-white;
+}
+
+.portal-sidebar .sidebar-brand-sub {
+  @apply text-slate-400;
+}
+
+.portal-sidebar .sidebar-close {
+  @apply border-white/12 bg-white/5 text-slate-200 hover:bg-white/10;
+}
+
+.sidebar-link {
+  @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-[color,background-color] duration-150;
+}
+
+.portal-sidebar .sidebar-link {
+  @apply text-slate-400 hover:bg-white/6 hover:text-slate-100;
+}
+
+.portal-sidebar .sidebar-link-active {
+  @apply bg-white/10 font-semibold text-white hover:bg-white/12 hover:text-white;
+  box-shadow: none;
+}
+
+.sidebar-link-active {
+  @apply bg-primary/10 font-semibold text-primary shadow-sm shadow-indigo-500/5 ring-1 ring-primary/15 hover:bg-primary/12 hover:text-primary;
+}
+
+.invoice-document {
+  @apply overflow-hidden rounded-2xl border border-border/80 bg-card/95 p-6 shadow-lg shadow-slate-900/[0.06] ring-1 ring-slate-900/[0.04] sm:p-8;
+}
+
+.invoice-document-header {
+  @apply flex flex-col gap-4 border-b border-border/80 pb-6 sm:flex-row sm:items-start sm:justify-between;
+}
+
+.invoice-document-parties {
+  @apply grid gap-4 py-6 sm:grid-cols-2;
+}
+
+.invoice-party {
+  @apply rounded-xl border border-border/80 bg-muted/20 p-4;
+}
+
+.invoice-party-label {
+  @apply text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground;
+}
+
+.invoice-lines {
+  @apply w-full min-w-[640px] border-collapse text-sm;
+}
+
+.invoice-lines thead {
+  @apply bg-muted/60 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground;
+}
+
+.invoice-lines th {
+  @apply whitespace-nowrap px-3 py-2.5;
+}
+
+.invoice-lines td {
+  @apply border-t border-border/60 px-3 py-3 align-middle;
+}
+
+.invoice-lines tbody tr:hover {
+  @apply bg-muted/25;
+}
+
+.invoice-document-totals {
+  @apply mt-6 flex justify-end border-t border-border/80 pt-6;
+}
+
+.invoice-totals-grid {
+  @apply w-full max-w-xs space-y-2;
+}
+
+.invoice-totals-grand {
+  @apply mt-2 border-t-2 border-foreground/15 pt-3 text-base font-bold text-foreground;
+}
+
+@media print {
+  .portal-sidebar,
+  .portal-shell header,
+  .btn-ghost,
+  a[href='/invoices'] {
+    display: none !important;
+  }
+
+  .md\:pl-64 {
+    padding-left: 0 !important;
+  }
+
+  .invoice-document {
+    box-shadow: none !important;
+    border: none !important;
+  }
 }
 
 .data-table {
@@ -148,7 +324,7 @@ body {
 }
 
 .surface-card {
-  @apply rounded-2xl border border-border/80 bg-card shadow-sm shadow-slate-200/60 transition-[box-shadow,transform,border-color] duration-300 ease-out;
+  @apply rounded-2xl border border-border/80 bg-card/95 shadow-lg shadow-slate-900/[0.06] ring-1 ring-slate-900/[0.04] backdrop-blur-sm transition-[box-shadow,transform,border-color] duration-300 ease-out;
 }
 
 .surface-card-interactive {
@@ -256,8 +432,8 @@ body {
 }
 
 .balance-hero {
-  @apply relative overflow-hidden rounded-2xl border border-indigo-200/60 p-5 text-white shadow-lg shadow-indigo-500/20;
-  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-mid) 48%, var(--gradient-end) 100%);
+  @apply relative overflow-hidden rounded-2xl border border-white/10 p-5 text-white shadow-xl shadow-indigo-900/25 sm:p-6;
+  background: linear-gradient(128deg, var(--gradient-start) 0%, var(--gradient-mid) 42%, var(--gradient-end) 100%);
 }
 
 .balance-hero::before {

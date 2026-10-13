@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 type SectionToolbarProps = {
   search: string
@@ -6,6 +7,7 @@ type SectionToolbarProps = {
   placeholder: string
   totalCount: number
   filteredCount: number
+  actions?: ReactNode
 }
 
 export function SectionToolbar({
@@ -14,9 +16,10 @@ export function SectionToolbar({
   placeholder,
   totalCount,
   filteredCount,
+  actions,
 }: SectionToolbarProps) {
   return (
-    <div className="flex flex-col gap-2 border-b border-border/80 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+    <div className="flex flex-col gap-2 border-b border-border/70 bg-muted/25 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
       <p className="text-xs text-muted-foreground">
         <span className="font-semibold text-foreground">{filteredCount}</span>
         {filteredCount !== totalCount ? (
@@ -28,6 +31,8 @@ export function SectionToolbar({
           <> records</>
         )}
       </p>
+      <div className="flex w-full flex-col gap-2 sm:max-w-md sm:flex-row sm:items-center sm:justify-end">
+        {actions}
       <div className="input-icon-wrap w-full sm:max-w-xs">
         <span className="input-field-icon" aria-hidden>
           <Search className="size-3.5" />
@@ -39,6 +44,7 @@ export function SectionToolbar({
           placeholder={placeholder}
           className="input-field h-9 text-sm"
         />
+      </div>
       </div>
     </div>
   )

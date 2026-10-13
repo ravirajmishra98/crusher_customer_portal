@@ -1,14 +1,16 @@
 import type {
   PortalDashboard,
+  PortalInvoice,
+  PortalInvoiceDetail,
+  PortalLedger,
   PortalLoginRequest,
   PortalLoginResponse,
-  PortalPayment,
+  PortalOutstanding,
+  PortalProfile,
   PortalWeighmentSummary,
-  PortalInvoice,
 } from '@/types/portal'
-import type { PortalProfile } from './session'
+import type { PortalProfile as SessionProfile } from './session'
 
-/** Token stored when bypass is on — never sent to a real API while bypass remains enabled. */
 export const PORTAL_BYPASS_TOKEN = 'dev-bypass-portal-token'
 
 const MATERIALS = ['20mm Metal', '10mm Metal', 'Crush Sand', 'Dust', 'Rubber metal'] as const
@@ -16,56 +18,40 @@ const STATUSES: PortalWeighmentSummary['status'][] = [
   'COMPLETED',
   'PENDING_GROSS',
   'PENDING_LOAD',
+  'PENDING_APPROVAL',
   'CANCELLED_NO_LOAD',
 ]
-const PAYMENT_MODES: PortalPayment['mode'][] = ['NEFT', 'RTGS', 'UPI', 'Cheque', 'Cash']
 
 export function mockPortalLogin(body: PortalLoginRequest): PortalLoginResponse {
-  const code = body.code.trim()
+  const id = (body.email ?? body.code ?? 'demo').trim()
   return {
     token: PORTAL_BYPASS_TOKEN,
     customerId: 0,
-    customerName: code || 'Demo customer',
+    customerName: id.includes('@') ? id.split('@')[0] : id || 'Demo customer',
+    refreshToken: 'dev-refresh-token',
   }
 }
 
-function mockTrips(count: number): PortalWeighmentSummary[] {
+function mockDispatches(count: number): PortalWeighmentSummary[] {
   return Array.from({ length: count }, (_, i) => {
     const id = 1000 + i
     const status = STATUSES[i % STATUSES.length]
     const completed = status === 'COMPLETED'
-    const daysAgo = i * 0.35
-    const tare = new Date(Date.now() - 86400000 * daysAgo)
+    const tare = new Date(Date.now() - 86400000 * (i * 0.35))
 
     return {
       id,
       challanNo: `DEMO/2026/${String(id).padStart(5, '0')}`,
-      vehicleNo: `MH-12-${String.fromCharCode(65 + (i % 26))}${String.fromCharCode(66 + (i % 20))}-${1000 + i}`,
+      vehicleNo: `MH-12-AB-${1000 + i}`,
       materialName: MATERIALS[i % MATERIALS.length],
-      companyName: i % 3 === 0 ? 'North Plant' : 'Demo Plant',
-      netWt: completed ? 12 + (i % 15) + (i % 10) / 10 : null,
-      rate: completed ? 780 + (i % 5) * 20 : null,
-      amount: completed ? 14000 + i * 120 : null,
-      totalAmt: completed ? 14700 + i * 125 : null,
+      companyName: 'Demo Plant',
+      netWt: completed ? 12 + (i % 15) : null,
+      rate: completed ? 850 : null,
+      amount: completed ? 14000 + i * 100 : null,
+      totalAmt: completed ? 14700 + i * 105 : null,
       status,
       tareTime: tare.toISOString(),
       grossTime: completed ? new Date(tare.getTime() + 3600000).toISOString() : null,
-    }
-  })
-}
-
-function mockPayments(count: number): PortalPayment[] {
-  return Array.from({ length: count }, (_, i) => {
-    const id = 500 + i
-    const d = new Date()
-    d.setDate(d.getDate() - i * 4)
-    return {
-      id,
-      paymentNo: `PAY-DEMO-${String(id).padStart(4, '0')}`,
-      amount: 25_000 + (i % 7) * 10_000,
-      mode: PAYMENT_MODES[i % PAYMENT_MODES.length],
-      reference: i % 2 === 0 ? `REF-${id}` : null,
-      paymentDate: d.toISOString().slice(0, 10),
     }
   })
 }
@@ -78,32 +64,139 @@ function mockInvoices(count: number): PortalInvoice[] {
     return {
       id,
       invoiceNo: `INV/2026/${String(id).padStart(4, '0')}`,
-      amount: 85_000 + i * 4500,
+      totalAmt: 85_000 + i * 4500,
       invoiceDate: d.toISOString().slice(0, 10),
-      status: i % 4 === 0 ? 'paid' : i % 3 === 0 ? 'partial' : 'open',
+      status: i % 3 === 0 ? 'CONFIRMED' : 'DRAFT',
+      companyName: 'Demo Plant',
     }
   })
 }
 
-export function mockPortalDashboard(profile: PortalProfile | null): PortalDashboard {
-  const name = profile?.customerName ?? 'Demo customer'
-  const code =
-    profile?.customerName && profile.customerName.length <= 12
-      ? profile.customerName.toUpperCase().replace(/\s+/g, '-')
-      : 'DEMO-001'
+export function mockPortalMe(session: SessionProfile | null): PortalProfile {
+  const name = session?.customerName ?? 'Demo customer'
+  return {
+    customerId: session?.customerId ?? 0,
+    name,
+    code: 'DEMO-001',
+    email: 'demo@example.com',
+    phone: '9876543210',
+    address: 'Solapur, Maharashtra',
+    gstNo: '27AAAAA0000A1Z5',
+    creditLimit: 1_000_000,
+    status: 'Active',
+  }
+}
+
+export function mockPortalOutstanding(_session: SessionProfile | null): PortalOutstanding {
+  return {
+    outstanding: 125_430.5,
+    creditLimit: 1_000_000,
+    available: 874_569.5,
+    aging: {
+      current: 80_000,
+      days31_60: 25_000,
+      days61_90: 12_430.5,
+      days90plus: 8_000,
+      total: 125_430.5,
+    },
+  }
+}
+
+export function mockPortalLedger(): PortalLedger {
+  return {
+    openingBalance: 100_000,
+    closingBalance: 125_430.5,
+    entries: [
+      {
+        date: '2026-03-01',
+        type: 'SALE',
+        ref: 'INV/2026/0801',
+        invoiceNo: 'INV/2026/0801',
+        debit: 45_000,
+        balance: 145_000,
+      },
+      {
+        date: '2026-03-05',
+        type: 'PAYMENT',
+        ref: 'NEFT-001',
+        credit: 50_000,
+        balance: 95_000,
+      },
+      {
+        date: '2026-03-10',
+        type: 'SALE',
+        ref: 'INV/2026/0802',
+        invoiceNo: 'INV/2026/0802',
+        debit: 30_430.5,
+        balance: 125_430.5,
+      },
+    ],
+  }
+}
+
+export function mockPortalDashboard(session: SessionProfile | null): PortalDashboard {
+  const profile = mockPortalMe(session)
+  const recentDispatches = mockDispatches(12)
+  const recentInvoices = mockInvoices(8)
 
   return {
-    customer: {
-      id: profile?.customerId ?? 0,
-      code,
-      name,
+    profile,
+    creditStatus: {
+      status: 'WARNING',
+      outstanding: 125_430.5,
       creditLimit: 1_000_000,
-      blocked: false,
-      status: 'Active',
+      usedPct: 13,
+      openTrips: 2,
     },
-    outstandingBalance: 125_430.5,
-    recentTrips: mockTrips(28),
-    recentPayments: mockPayments(18),
-    recentInvoices: mockInvoices(14),
+    outstanding: 125_430.5,
+    aging: mockPortalOutstanding(session).aging,
+    totalDispatches: 28,
+    openInvoices: 3,
+    recentDispatches,
+    recentInvoices,
+  }
+}
+
+export function mockPortalDispatches(): PortalWeighmentSummary[] {
+  return mockDispatches(28)
+}
+
+export function mockPortalDispatch(id: number): PortalWeighmentSummary {
+  return mockDispatches(28).find((d) => d.id === id) ?? mockDispatches(1)[0]
+}
+
+export function mockPortalInvoices(): PortalInvoice[] {
+  return mockInvoices(18)
+}
+
+export function mockPortalInvoice(id: number): PortalInvoiceDetail {
+  const base = mockInvoices(18).find((i) => i.id === id) ?? mockInvoices(1)[0]
+  const subtotal = 16_511.25
+  const gstAmt = subtotal * 0.05
+  return {
+    ...base,
+    status: 'CONFIRMED',
+    subtotal,
+    gstAmt,
+    totalAmt: subtotal + gstAmt,
+    totalNetWt: 18.5,
+    customerName: 'RK works',
+    customerAddress: 'Plot 12, Industrial Area, Solapur, Maharashtra 413001',
+    customerGstNo: '27AABCR1234F1Z5',
+    companyAddress: 'SuperCrusher Unit 1, MIDC Kurduwadi, Maharashtra',
+    companyGstNo: '27AAECS1234G1Z2',
+    billingPeriodFrom: '2026-03-01',
+    billingPeriodTo: '2026-03-15',
+    notes: 'Thank you for your business. Please quote invoice number on remittance.',
+    items: [
+      {
+        challanNo: 'DEMO/2026/01001',
+        vehicleNo: 'MH-12-AB-1000',
+        materialName: '20mm Metal',
+        netWt: 18.5,
+        rate: 850,
+        totalAmt: subtotal,
+      },
+    ],
   }
 }

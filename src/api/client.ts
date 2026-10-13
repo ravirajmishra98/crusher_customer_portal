@@ -62,3 +62,23 @@ export async function portalRequest<T>(
   if (response.status === 204) return undefined as T
   return (await response.json()) as T
 }
+
+export async function portalFetchRaw(
+  path: string,
+  options: PortalRequestOptions = {},
+): Promise<Response> {
+  const normalized = path.startsWith('/') ? path : `/${path}`
+  const url = `${getApiBaseUrl()}${normalized}`
+
+  const headers = new Headers(options.headers)
+  if (!headers.has('Content-Type') && options.body) {
+    headers.set('Content-Type', 'application/json')
+  }
+
+  if (!options.anonymous) {
+    const token = getPortalToken()
+    if (token) headers.set('Authorization', `Bearer ${token}`)
+  }
+
+  return fetch(url, { ...options, headers })
+}
