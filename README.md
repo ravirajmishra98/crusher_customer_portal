@@ -40,13 +40,13 @@ npm run build
 npm run preview
 ```
 
-Set **`VITE_API_BASE_URL`** to your live API prefix, e.g. `https://api.yourdomain.com/api/v1`.
+Production uses **`.env.production`**: `VITE_API_BASE_URL=/api/v1` (same host as the portal; proxy `/api` to the ERP backend — see `vercel.json`, same pattern as `crusher_frontend`).
 
 ## Hosting (separate from ERP)
 
 This repo is meant for its **own** origin (e.g. `portal.yourdomain.com`).
 
-1. Build with `VITE_API_BASE_URL` pointing at the same backend as ERP.
+1. `npm run build` (loads `.env.production` with `/api/v1` unless overridden).
 2. Deploy `dist/` to static hosting (Vercel, Netlify, S3+CloudFront, nginx, etc.).
 3. SPA fallback: all routes → `index.html` (see `vercel.json`).
 4. **CORS**: backend must allow this origin on `/portal/*` (and preflight for `Authorization` header).
