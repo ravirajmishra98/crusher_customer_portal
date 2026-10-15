@@ -171,15 +171,19 @@ export function mockPortalInvoices(): PortalInvoice[] {
 
 export function mockPortalInvoice(id: number): PortalInvoiceDetail {
   const base = mockInvoices(18).find((i) => i.id === id) ?? mockInvoices(1)[0]
-  const subtotal = 16_511.25
-  const gstAmt = subtotal * 0.05
+  const materialAmt = 8470
+  const transportAmt = 100
+  const subtotal = materialAmt + transportAmt
+  const gstAmt = 428.5
   return {
     ...base,
     status: 'CONFIRMED',
+    documentType: 'combined',
+    transportInvoiceMode: 'integrated',
     subtotal,
     gstAmt,
     totalAmt: subtotal + gstAmt,
-    totalNetWt: 18.5,
+    totalNetWt: 10_000,
     customerName: 'RK works',
     customerAddress: 'Plot 12, Industrial Area, Solapur, Maharashtra 413001',
     customerGstNo: '27AABCR1234F1Z5',
@@ -187,15 +191,30 @@ export function mockPortalInvoice(id: number): PortalInvoiceDetail {
     companyGstNo: '27AAECS1234G1Z2',
     billingPeriodFrom: '2026-03-01',
     billingPeriodTo: '2026-03-15',
+    einvoicingRequired: false,
+    createdAt: new Date().toISOString(),
     notes: 'Thank you for your business. Please quote invoice number on remittance.',
     items: [
       {
+        id: 5577,
+        weighmentId: 1000,
         challanNo: 'DEMO/2026/01001',
+        grossTime: new Date().toISOString(),
         vehicleNo: 'MH-12-AB-1000',
         materialName: '20mm Metal',
-        netWt: 18.5,
-        rate: 850,
-        totalAmt: subtotal,
+        netWt: 10_000,
+        quantity: 10,
+        unit: 'MT',
+        rate: 847,
+        amount: materialAmt,
+        itemType: 'integrated',
+        gstRate: 5,
+        taxableAmt: subtotal,
+        gstAmt,
+        transportApplicable: true,
+        transportRate: 10,
+        transportAmt,
+        totalAmt: subtotal + gstAmt,
       },
     ],
   }

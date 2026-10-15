@@ -114,20 +114,7 @@ body {
 .portal-shell {
   position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(ellipse 120% 80% at 50% -20%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 55%),
-    linear-gradient(180deg, #eef2ff 0%, var(--background) 14rem, var(--background) 100%);
-}
-
-.portal-shell::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  opacity: 0.35;
-  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--foreground) 6%, transparent) 1px, transparent 0);
-  background-size: 24px 24px;
-  pointer-events: none;
+  background: linear-gradient(180deg, #f8fafc 0%, var(--background) 8rem, var(--background) 100%);
 }
 
 .brand-mark {
@@ -142,19 +129,60 @@ body {
 }
 
 .page-stack-wide {
-  @apply mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-6;
+  @apply mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:gap-6 sm:px-6 lg:py-8;
 }
 
 .data-panel {
-  @apply overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm shadow-slate-900/[0.04] ring-1 ring-slate-900/[0.02];
+  @apply overflow-hidden rounded-xl border border-border/90 bg-card;
 }
 
 .stat-card {
-  @apply rounded-2xl border border-border/80 bg-card p-4 shadow-sm shadow-slate-900/[0.04] ring-1 ring-slate-900/[0.02] transition-[box-shadow,transform] duration-300 hover:shadow-md hover:shadow-slate-900/[0.06];
+  @apply rounded-xl border border-border/90 bg-card p-4;
+}
+
+.content-card {
+  @apply overflow-hidden rounded-xl border border-border/90 bg-card;
+}
+
+.content-card-header {
+  @apply border-b border-border/70 px-4 py-3.5 sm:px-5;
+}
+
+.content-card-body {
+  @apply px-4 py-4 sm:px-5 sm:py-5;
+}
+
+.content-card-icon {
+  @apply flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary;
+}
+
+.detail-grid {
+  @apply grid gap-4 sm:grid-cols-2;
+}
+
+.detail-field {
+  @apply flex flex-col gap-1;
+}
+
+.detail-field-label {
+  @apply text-[11px] font-semibold uppercase tracking-wide text-muted-foreground;
+}
+
+.detail-field-value {
+  @apply text-sm font-medium leading-snug text-foreground;
+}
+
+.profile-hero {
+  @apply relative overflow-hidden rounded-xl border border-white/10 p-5 sm:p-6;
+  background: linear-gradient(128deg, var(--gradient-start) 0%, var(--gradient-mid) 45%, var(--gradient-end) 100%);
+}
+
+.profile-hero-avatar {
+  @apply flex size-14 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/15 font-display text-lg font-bold text-white backdrop-blur-sm;
 }
 
 .quick-link-card {
-  @apply flex items-center gap-3 rounded-2xl border border-border/80 bg-card/90 p-3.5 shadow-sm shadow-slate-900/[0.03] ring-1 ring-slate-900/[0.02] transition-[border-color,box-shadow,transform] duration-200 hover:border-primary/25 hover:shadow-md hover:shadow-indigo-500/10 active:scale-[0.99];
+  @apply flex items-center gap-3 rounded-xl border border-border/90 bg-card p-3.5 transition-[border-color,background-color] duration-200 hover:border-primary/30 hover:bg-muted/30 active:scale-[0.99];
 }
 
 .nav-pill {
@@ -222,7 +250,7 @@ body {
 }
 
 .invoice-document {
-  @apply overflow-hidden rounded-2xl border border-border/80 bg-card/95 p-6 shadow-lg shadow-slate-900/[0.06] ring-1 ring-slate-900/[0.04] sm:p-8;
+  @apply overflow-hidden rounded-xl border border-border/90 bg-card p-6 sm:p-8;
 }
 
 .invoice-document-header {
@@ -316,15 +344,15 @@ body {
 }
 
 .dashboard-tab-active {
-  @apply bg-card text-foreground shadow-sm ring-1 ring-border/80;
+  @apply bg-card text-foreground ring-1 ring-border/80;
 }
 
 .stat-tile {
-  @apply rounded-xl border border-border/80 bg-card p-4 shadow-sm;
+  @apply rounded-xl border border-border/90 bg-card p-4;
 }
 
 .surface-card {
-  @apply rounded-2xl border border-border/80 bg-card/95 shadow-lg shadow-slate-900/[0.06] ring-1 ring-slate-900/[0.04] backdrop-blur-sm transition-[box-shadow,transform,border-color] duration-300 ease-out;
+  @apply rounded-xl border border-border/90 bg-card transition-[border-color] duration-200 ease-out;
 }
 
 .surface-card-interactive {
@@ -432,7 +460,7 @@ body {
 }
 
 .balance-hero {
-  @apply relative overflow-hidden rounded-2xl border border-white/10 p-5 text-white shadow-xl shadow-indigo-900/25 sm:p-6;
+  @apply relative overflow-hidden rounded-xl border border-white/10 p-5 text-white sm:p-6;
   background: linear-gradient(128deg, var(--gradient-start) 0%, var(--gradient-mid) 42%, var(--gradient-end) 100%);
 }
 

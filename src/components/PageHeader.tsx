@@ -19,11 +19,11 @@ export function PageHeader({ eyebrow, title, description, actions, className }: 
     >
       <div className="min-w-0 animate-fade-in-up">
         {eyebrow ? (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary/80">
+          <p className="inline-flex rounded-md bg-primary/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
             {eyebrow}
           </p>
         ) : null}
-        <h1 className="font-display mt-1 text-2xl font-bold tracking-tight text-foreground sm:text-[1.65rem]">
+        <h1 className="font-display mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-[1.75rem]">
           {title}
         </h1>
         {description ? (

@@ -94,18 +94,36 @@ export type PortalInvoice = {
   companyName?: string | null
   customerName?: string | null
   totalNetWt?: number | null
+  documentType?: string | null
+  transportInvoiceMode?: string | null
+  paymentStatus?: string | null
+  paidAmt?: number | null
+  dueAmt?: number | null
 }
 
 export type InvoiceLineItem = {
   id?: number
+  weighmentId?: number | null
   challanNo?: string | null
+  grossTime?: string | null
   vehicleNo?: string | null
   materialName?: string | null
   netWt?: number | null
+  quantity?: number | null
+  unit?: string | null
   rate?: number | null
   amount?: number | null
   totalAmt?: number | null
   description?: string | null
+  itemType?: string | null
+  hsnSac?: string | null
+  gstRate?: number | null
+  taxableAmt?: number | null
+  gstAmt?: number | null
+  transportApplicable?: boolean | null
+  transportRate?: number | null
+  transportAmt?: number | null
+  royaltyAmt?: number | null
 }
 
 export type PortalInvoiceDetail = PortalInvoice & {
@@ -116,6 +134,13 @@ export type PortalInvoiceDetail = PortalInvoice & {
   billingPeriodFrom?: string | null
   billingPeriodTo?: string | null
   notes?: string | null
+  einvoicingRequired?: boolean | null
+  irn?: string | null
+  ackNo?: string | null
+  ackDate?: string | null
+  einvoiceStatus?: string | null
+  createdAt?: string | null
+  updatedAt?: string | null
   items?: InvoiceLineItem[]
 }
 

@@ -1,6 +1,7 @@
 import { getApiBaseUrl, isPortalLoginBypassEnabled } from '@/config/env'
 import { downloadBlob } from '@/lib/downloadBlob'
-import { formatDate, formatInrAmount } from '@/lib/format'
+import { formatDate, formatDateTime, formatInrAmount } from '@/lib/format'
+import { formatInvoiceLineQuantity, invoiceTotalQuantityLabel } from '@/lib/invoice-display'
 import { invoiceStatusLabel } from '@/lib/invoiceStatus'
 import type { PortalInvoiceDetail } from '@/types/portal'
 import { getPortalToken } from '@/api/session'
@@ -29,10 +30,14 @@ function invoiceHtmlDocument(invoice: PortalInvoiceDetail, options?: { autoPrint
       <tr>
         <td>${idx + 1}</td>
         <td>${escapeHtml(item.challanNo ?? '—')}</td>
+        <td>${escapeHtml(formatDateTime(item.grossTime))}</td>
         <td>${escapeHtml(item.vehicleNo ?? '—')}</td>
         <td>${escapeHtml(item.materialName ?? item.description ?? '—')}</td>
-        <td style="text-align:right">${item.netWt ?? '—'}</td>
-        <td style="text-align:right">${item.rate ?? '—'}</td>
+        <td style="text-align:right">${escapeHtml(formatInvoiceLineQuantity(item))}</td>
+        <td style="text-align:right">${escapeHtml(formatInrAmount(item.amount ?? item.rate))}</td>
+        <td style="text-align:right">${escapeHtml(formatInrAmount(item.transportAmt))}</td>
+        <td style="text-align:right">${escapeHtml(formatInrAmount(item.taxableAmt ?? item.amount))}</td>
+        <td style="text-align:right">${item.gstRate != null ? `${item.gstRate}%` : '—'}</td>
         <td style="text-align:right">${escapeHtml(formatInrAmount(item.totalAmt ?? item.amount))}</td>
       </tr>`,
     )
@@ -95,14 +100,16 @@ function invoiceHtmlDocument(invoice: PortalInvoiceDetail, options?: { autoPrint
   <table>
     <thead>
       <tr>
-        <th>#</th><th>Challan</th><th>Vehicle</th><th>Material</th>
-        <th style="text-align:right">Net (MT)</th><th style="text-align:right">Rate</th><th style="text-align:right">Amount</th>
+        <th>#</th><th>Challan</th><th>Loaded</th><th>Vehicle</th><th>Material</th>
+        <th style="text-align:right">Qty</th><th style="text-align:right">Material</th><th style="text-align:right">Transport</th>
+        <th style="text-align:right">Taxable</th><th style="text-align:right">GST</th><th style="text-align:right">Line total</th>
       </tr>
     </thead>
-    <tbody>${rows || '<tr><td colspan="7">No line items</td></tr>'}</tbody>
+    <tbody>${rows || '<tr><td colspan="11">No line items</td></tr>'}</tbody>
   </table>
+  <p class="muted">Total quantity: ${escapeHtml(invoiceTotalQuantityLabel(invoice))}</p>
   <div class="totals">
-    <div><span>Subtotal</span><span>${escapeHtml(formatInrAmount(invoice.subtotal))}</span></div>
+    <div><span>Taxable subtotal</span><span>${escapeHtml(formatInrAmount(invoice.subtotal))}</span></div>
     <div><span>GST</span><span>${escapeHtml(formatInrAmount(invoice.gstAmt))}</span></div>
     <div class="grand"><span>Total</span><span>${escapeHtml(formatInrAmount(invoice.totalAmt))}</span></div>
   </div>
@@ -128,13 +135,26 @@ export function exportInvoiceLineItemsCsv(invoice: PortalInvoiceDetail): void {
   const base = sanitizeFilename(invoice.invoiceNo)
   exportCsvFile(
     `${base}_line_items`,
-    ['Challan', 'Vehicle', 'Material', 'Net (MT)', 'Rate', 'Amount'],
+    [
+      'Challan',
+      'Vehicle',
+      'Material',
+      'Qty',
+      'Material amt',
+      'Transport amt',
+      'Taxable',
+      'GST rate',
+      'Line total',
+    ],
     (invoice.items ?? []).map((item) => [
       item.challanNo,
       item.vehicleNo,
       item.materialName ?? item.description,
-      item.netWt,
-      item.rate,
+      formatInvoiceLineQuantity(item),
+      item.amount,
+      item.transportAmt,
+      item.taxableAmt ?? item.amount,
+      item.gstRate,
       item.totalAmt ?? item.amount,
     ]),
   )
